@@ -1,0 +1,5 @@
+
+[
+    { "id": 0, "up": 3, "down": 1, "left": 2, "right": 4, "row_id": 5, "column": 0 },
+    { "id": 1, "up": 0, "down": 2, "left": 4, "right": 5, "row_id": 5, "column": 1 }
+]
