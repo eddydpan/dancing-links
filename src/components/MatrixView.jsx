@@ -1,4 +1,3 @@
-// src/components/MatrixView.jsx
 import React from 'react';
 
 function LeftParenthesis() {
@@ -16,28 +15,29 @@ function RightParenthesis() {
   );
 }
 
-function MatrixCell( {cell, className} ) {
-  return <div className={className}>
-    {cell}
-  </div>
+function MatrixCell({ cell, className, onClick }) {
+  return (
+    <button className={className} onClick={onClick}>
+      {cell}
+    </button>
+  );
 }
 
-export default function MatrixView( {matrix, setMatrix} ) {
-
-  /* TODO: 
-  * implement editCell to JUST EDIT A CELL rather than update the entire matrix
-  * Maybe this means making each cell of the matrix a state that can be
-  * independently updated.
-  */ 
-  function editCell(row, col) {
-    tempMat = matrix;
-    tempMat[row][col] += 1 % 2;
-    setMatrix(tempMat) 
+export default function MatrixView({ matrix, setMatrix }) {
+  // Function to handle cell value toggle
+  function toggleCell(row, col) {
+    const newMatrix = matrix.map((r, rowIndex) =>
+      r.map((c, colIndex) => (rowIndex === row && colIndex === col ? (c === 1 ? 0 : 1) : c))
+    );
+    setMatrix(newMatrix);
   }
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="w-full flex justify-center">
         <h1 className="text-2xl font-bold">Exact Cover Problem</h1>
+        {/*FIXME: delete this*/}
+        <h3>{matrix}</h3> 
       </div>
       <div className="flex items-stretch mt-4">
         {/* Left parenthesis */}
@@ -56,8 +56,9 @@ export default function MatrixView( {matrix, setMatrix} ) {
             row.map((cell, colIndex) => (
               <MatrixCell
                 key={`${rowIndex}-${colIndex}`}
-                cell={cell} // TODO: update this to be dynamic: onClick()
+                cell={cell}
                 className="w-12 h-12 flex items-center justify-center text-xl"
+                onClick={() => toggleCell(rowIndex, colIndex)} // Pass toggle function
               />
             ))
           )}
@@ -71,15 +72,3 @@ export default function MatrixView( {matrix, setMatrix} ) {
     </div>
   );
 }
-
-
-
-// Displays the DLX matrix, animations for cover/uncover
-
-/* Render the array as a table/grid with tailwind */
-
-/* put in a 1 or 0 in each cell */
-
-/* Allow for highlighting cells + rows + columns */
-
-
