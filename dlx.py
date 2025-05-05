@@ -28,8 +28,8 @@ class DancingLinks:
 
     def __init__(self, cover_matrix):
         self.header = ColumnHeader("root")
-
-        self.cover_matrix = cover_matrix
+        cover_matrix.insert(0, [0 for _ in range(len(cover_matrix[0]))])
+        self.cover_matrix = cover_matrix;
         self.num_rows = len(self.cover_matrix)
         self.num_cols = len(self.cover_matrix[0])
         

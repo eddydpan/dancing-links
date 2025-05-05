@@ -23,13 +23,15 @@ function MatrixCell({ cell, className, onClick }) {
   );
 }
 
-export default function MatrixView({ matrix, setMatrix }) {
+export default function MatrixView({ matrix, setMatrix, isRunning }) {
   // Function to handle cell value toggle
-  function toggleCell(row, col) {
-    const newMatrix = matrix.map((r, rowIndex) =>
-      r.map((c, colIndex) => (rowIndex === row && colIndex === col ? (c === 1 ? 0 : 1) : c))
-    );
-    setMatrix(newMatrix);
+  function toggleCell(isRunning, row, col) {
+    if (!isRunning) {
+      const newMatrix = matrix.map((r, rowIndex) =>
+        r.map((c, colIndex) => (rowIndex === row && colIndex === col ? (c === 1 ? 0 : 1) : c))
+      );
+      setMatrix(newMatrix);
+    }
   }
 
   return (
@@ -58,7 +60,7 @@ export default function MatrixView({ matrix, setMatrix }) {
                 key={`${rowIndex}-${colIndex}`}
                 cell={cell}
                 className="w-12 h-12 flex items-center justify-center text-xl"
-                onClick={() => toggleCell(rowIndex, colIndex)} // Pass toggle function
+                onClick={() => toggleCell(isRunning, rowIndex, colIndex)}
               />
             ))
           )}
