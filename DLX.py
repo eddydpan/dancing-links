@@ -44,16 +44,16 @@ class DLX_solver():
 
     def empty_to_exact_cover(self):
         '''
-        Generate the exact‐cover matrix for an empty N-Queens problem of size n.
+        Generate the exact-cover matrix for an empty N-Queens problem of size n.
 
         Constructs a matrix with (n**2 + 1) rows and (6*n - 2) columns encoding:
         - n “row” constraints
         - n “column” constraints
-        - (2n – 1) positive‐diagonal constraints
-        - (2n – 1) negative‐diagonal constraints
+        - (2n - 1) positive-diagonal constraints
+        - (2n - 1) negative-diagonal constraints
 
         Each candidate queen placement at (r,c) becomes one row in this matrix,
-        with four 1’s marking which 4 constraints it satisfies.
+        with four 1's marking which 4 constraints it satisfies.
         '''
         # TODO might not be necessary, converts a dimension n into the exact
         # cover matrix representing an empty N-Queens exact cover matrix
@@ -83,13 +83,13 @@ class DLX_solver():
 
     def convert_to_exact_cover(self, sudoku):
         '''
-        Convert a 9×9 Sudoku board into an exact-cover binary matrix.
+        Convert a 9x9 Sudoku board into an exact-cover binary matrix.
 
         Args:
-            sudoku (list[list[int]]): 9×9 grid with 0 for empty and 1–9 for givens.
+            sudoku (list[list[int]]): 9x9 grid with 0 for empty and 1-9 for givens.
 
         Returns:
-            list[list[int]]: A (729+1)×324 matrix where each of the 729 candidate
+            list[list[int]]: A (729+1)x324 matrix where each of the 729 candidate
                             (r,c,v) assignments is a row, and the 324 columns
                             correspond to the four Sudoku constraints:
                             1) cell-filled
@@ -125,14 +125,14 @@ class DLX_solver():
         Map a Sudoku candidate (r, c, v) to its exact-cover row and constraint columns.
 
         Args:
-            r (int): Row index in the Sudoku grid (0–8).
-            c (int): Column index in the Sudoku grid (0–8).
-            v (int): Value index (0–8) corresponding to digit v+1.
+            r (int): Row index in the Sudoku grid (0-8).
+            c (int): Column index in the Sudoku grid (0-8).
+            v (int): Value index (0-8) corresponding to digit v+1.
 
         Returns:
             tuple: (row_pos, cell_col, row_col, col_col, box_col)
-                where row_pos is the matrix‐row for this candidate, and the
-                others are the four column‐indices it covers.
+                where row_pos is the matrix-row for this candidate, and the
+                others are the four column-indices it covers.
         '''
         # Constraint starting indexes
         start_cell = 0
@@ -173,14 +173,14 @@ class DLX_solver():
 
     def convert_to_sudoku(self, solutions):
         '''
-        Build a solved 9×9 Sudoku grid from the selected exact-cover solution rows.
+        Build a solved 9x9 Sudoku grid from the selected exact-cover solution rows.
 
         Args:
             solutions (list): Either Data nodes (with .row_id) or integer row IDs
                             representing the picked (r,c,v) assignments.
 
         Side-effect:
-            Populates self.solution as a 9×9 array of integers 1–9.
+            Populates self.solution as a 9x9 array of integers 1-9.
         '''
         self.solutions = np.zeros((9,9), dtype="int64")
 
@@ -274,10 +274,10 @@ class DLX_solver():
         '''
         Choose the column header with the fewest remaining nodes (smallest size).
 
-        Implements Knuth’s “minimum remaining values” heuristic to reduce branching.
+        Implements Knuth's “minimum remaining values” heuristic to reduce branching.
 
         Returns:
-            Column: The most constrained column header (fewest 1’s) to branch on next.
+            Column: The most constrained column header (fewest 1's) to branch on next.
         '''
         # TODO make sure that this doesn't choose soft constraints
         head = self.header
@@ -384,7 +384,7 @@ class DLX_solver():
 
     def AlgoX(self):
         """
-        Execute Knuth’s Algorithm X search to find all solutions.
+        Execute Knuth's Algorithm X search to find all solutions.
 
         Depending on self.type (“N-Queens” or “Sudoku”):
         1. Check base case: if no columns remain, record current solution.
