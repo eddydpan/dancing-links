@@ -191,7 +191,38 @@ function findArrowPos(posMat, r1, c1, r2, c2, dir) {
 }
 
 
+/**
+ * Creates a highlight component from index (r1,c1) to (r2,c2).
+ * @param {*} posMat 
+ * @param {*} r1 
+ * @param {*} c1 
+ * @param {*} r2 
+ * @param {*} c2 
+ * @returns 
+ */
+function Highlight( {posMat, r1, c1, r2, c2} ) {
+    const [y1, x1] = posMat[r1][c1];
+    const [y2, x2] = posMat[r2][c2];
 
+    const top = Math.min(y1, y2);
+    const left = Math.min(x1, x2);
+    const width = Math.abs(x2 - x1) + NODE_SIZE + 30;
+    const height = Math.abs(y2 - y1) + NODE_SIZE + 30;
+
+    return (
+        <div
+            key={`highlight-${r1}-${c1}-${r2}-${c2}`}
+            className="absolute bg-yellow-300 opacity-50"
+            style={{
+                top: `${top}px`,
+                left: `${left}px`,
+                width: `${width}px`,
+                height: `${height}px`,
+                zIndex: 1,
+            }}
+        />
+    );
+}
 
 
 function applyLogsToDLX(clonedDLX, logIndex, logs, setSolution) {
@@ -212,7 +243,21 @@ function applyLogsToDLX(clonedDLX, logIndex, logs, setSolution) {
             case 'solution':
                 setSolution(currLog.solution)
                 console.log("Solution: ", currLog.solution);
+                break;
             
+            // case 'select_col':
+            //     <Highlight
+            //         posMat={posMat}
+            //         r1={0}
+            //         c1={currLog.col}
+            //         r2={clonedDLX.numRows}
+            //         c2={currLog.col}
+            //     />//TODO:
+            //     break;
+            // case 'select_row':
+            //     break;
+            // case 'select_node':
+            //     break;
             default:
                 console.warn(`Unknown log type: ${currLog.action}`);
                 break;
