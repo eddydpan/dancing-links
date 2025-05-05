@@ -27,7 +27,6 @@ class Column(Node):
 class DLX_solver():
     """Class for using DLX to solve N-Queens"""
     def __init__(self, type, n, cover_mat, sudoku):
-        # TODO note that cover_mat needs to have a row of zero padding on top
         """Initialize the DLX solver"""
         self.header = Column("Header")
         self.type = type
@@ -57,10 +56,8 @@ class DLX_solver():
         Each candidate queen placement at (r,c) becomes one row in this matrix,
         with four 1's marking which 4 constraints it satisfies.
         '''
-        # TODO might not be necessary, converts a dimension n into the exact
         # cover matrix representing an empty N-Queens exact cover matrix
-        # Psuedo code:
-
+        # Pseudocode:
         # 1. Create an empty exact cover matrix. n + n + (2n - 1) + (2n - 1) by (n**2 + 1)
         #    for n rows, n cols, 2n - 1 positive diagonals and 2n - 1 negative diagonals
         n = self.n
@@ -226,7 +223,7 @@ class DLX_solver():
             - Populates self.cover_mat[0][*] with Column objects.
             - Splices every Node into the 4-way linked structure.
         """
-        # TODO write a test for this
+        # Pseudocode:
         # 1. Create a column node + 1 for each column in the exact cover matrix (gives us the dummy home node too)
         # 2. Add that reference to that column at the self.cover_mat[0][i]
         # 3. Link each of these columns together left to right
@@ -298,12 +295,10 @@ class DLX_solver():
         Returns:
             Column: The most constrained column header (fewest 1's) to branch on next.
         '''
-        # TODO make sure that this doesn't choose soft constraints
         head = self.header
         least_nodes = head.right
         head = head.right
 
-        # TODO remove the hard code here
         if self.type == "N-Queens":
             while (head != self.header and head.col_id < 2*self.n):
 
@@ -333,9 +328,7 @@ class DLX_solver():
         Args:
             col_head (Column): The column header to cover.
         """
-        # TODO write a test for this of some kind? namely a check if dancing lists
-        # are equal
-        # Psuedo code:
+        # Pseudocode:
         # 1. Extract the column from the node
         # 2. Disconnect the head of the column from the other heads
         # 3. Iterate through all rows
@@ -375,8 +368,7 @@ class DLX_solver():
         Args:
             col_head (Column): The column header to uncover.
         """
-        # TODO unittest
-        # Psuedo code:
+        # Pseudocode:
         # Basically just the reverse of what we did in cover
 
         # Iterate through all of the rows in the column until you reach the head
@@ -419,8 +411,7 @@ class DLX_solver():
             - Populates self.solutions (list of row_ids or nodes) on success.
             - For Sudoku, calls convert_to_sudoku at base-case to build final grid.
         """
-        # TODO check if this functions correctly
-        # Psuedo code:
+        # Pseudocode:
         # 1. Base case, header.right = header, append current solution to solutions, return
         # 2. Choose a starting column, probably off of least constraints heuristic
         # 3. Cover the chosen column
@@ -436,8 +427,6 @@ class DLX_solver():
         # 13. Uncover the column
         # 14. empty return statement, other base case (unsuccessful recursion))
         
-        # 1st base case, cleared out the hard requirements TODO add soft requirements detection
-        # TODO remove this 4
         if self.type == "N-Queens":
             n = self.n
 
