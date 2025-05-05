@@ -40,21 +40,7 @@ class DLX:
         self.solution = []
 
     def convert_to_exact_cover(self, sudoku):
-        '''
-        Convert a 9×9 Sudoku board into an exact-cover binary matrix.
 
-        Args:
-            sudoku (list[list[int]]): 9×9 grid with 0 for empty and 1–9 for givens.
-
-        Returns:
-            list[list[int]]: A (729+1)×324 matrix where each of the 729 candidate
-                            (r,c,v) assignments is a row, and the 324 columns
-                            correspond to the four Sudoku constraints:
-                            1) cell-filled
-                            2) row-digit
-                            3) column-digit
-                            4) box-digit
-        '''
         col_size = 324
         row_size = 729
 
@@ -79,19 +65,6 @@ class DLX:
         return exact_cover
 
     def calculate_mappings(self, r, c, v):
-        '''
-        Map a Sudoku candidate (r, c, v) to its exact-cover row and constraint columns.
-
-        Args:
-            r (int): Row index in the Sudoku grid (0–8).
-            c (int): Column index in the Sudoku grid (0–8).
-            v (int): Value index (0–8) corresponding to digit v+1.
-
-        Returns:
-            tuple: (row_pos, cell_col, row_col, col_col, box_col)
-                where row_pos is the matrix‐row for this candidate, and the
-                others are the four column‐indices it covers.
-        '''
         # Constraint starting indexes
         start_cell = 0
         start_row = 81
@@ -166,6 +139,7 @@ class DLX:
                     self.matrix
 
 
+    # The cover function as described in Knuth's paper
     def cover(self, target):
 
         # Get the column of the target node
@@ -189,6 +163,7 @@ class DLX:
                 row_right.up.down = row_right.down
                 row_right.down.up = row_right.up
 
+                # Decrement the number of nodes this column has
                 self.matrix[0][row_right.column.ID].size -= 1
                 row_right = row_right.right
 
@@ -213,6 +188,7 @@ class DLX:
                 row_left.up.down = row_left
                 row_left.down.up = row_left
 
+                # Increment the number of nodes this column has
                 self.matrix[0][row_left.column.ID].size += 1
                 row_left = row_left.left
 
@@ -223,6 +199,7 @@ class DLX:
         target_col.right.left = target_col
 
 
+    # Heuristic which choose the column with the least number of nodes (helps reduce the branching factor of our search)
     def get_col_with_least_nodes(self):
 
         head = self.header
@@ -239,17 +216,7 @@ class DLX:
         
         return least_nodes
 
-    def convert_to_sudoku(self, solution):
-        '''
-        Build a solved 9×9 Sudoku grid from the selected exact-cover solution rows.
-
-        Args:
-            solutions (list): Either Data nodes (with .row_id) or integer row IDs
-                            representing the picked (r,c,v) assignments.
-
-        Side-effect:
-            Populates self.solution as a 9×9 array of integers 1–9.
-        '''
+    def convert_to_sudoku(self, solution, board):
         self.solution = np.zeros((9,9), dtype="int64")
 
         for row in solution:
@@ -258,19 +225,21 @@ class DLX:
             c = row_id // 81
             r = (row_id % 81) // 9
             n = (row_id % 81) % 9
-            self.solution[c][r] = n + 1 # Convert from zero base
-        
+            self.solution[c][r] = n + 1
+            board[c][r] = n + 1
         print(self.solution)
 
 
-    def search(self, k):
+    # The search function as described in Knuth's paper
+    def search(self, k, board):
         
+        # We managed to cover all columns, and therefore found solution(s)
         if (self.header.right == self.header):
-            return self.convert_to_sudoku(self.solutions)
+            return self.convert_to_sudoku(self.solutions, board)
         
         column = self.get_col_with_least_nodes()
 
-        self.cover(column) # Cover that column
+        self.cover(column)
 
         row = column.down
         while (row != column):
@@ -282,7 +251,7 @@ class DLX:
                 self.cover(row_right)
                 row_right = row_right.right
             
-            self.search(k+1)
+            self.search(k+1, board)
 
 
             self.solutions.pop()
@@ -296,9 +265,25 @@ class DLX:
             row = row.down
         
         self.uncover(column)
-        return
 
-TEST_INPUT = np.array([
+class Solution:
+    def solveSudoku(self, board):
+        if isinstance(board[0][0], str):
+            grid = [[int(board[r][c]) if board[r][c] != '.' else 0
+                   for c in range(9)] for r in range(9)]
+        else:
+            grid = board
+        dlx = DLX(np.array(grid))
+        dlx.create_linked_mat()
+        dlx.search(0, grid)
+        # write back into sudoku as strings
+        if isinstance(board[0][0], str):
+            for r in range(9):
+                for c in range(9):
+                    board[r][c] = str(dlx.solution[r][c])
+            print(f"List of Strings: {board}")
+
+TEST_INPUT = [
                     [0,2,0, 0,0,6, 9,0,0],
                     [0,0,0, 0,5,0, 0,2,0],
                     [6,0,0, 3,0,0, 0,0,0],
@@ -310,15 +295,18 @@ TEST_INPUT = np.array([
                     [0,0,9, 0,4,0, 0,0,0],
                     [3,0,0, 9,0,2, 0,1,7],
                     [0,0,8, 0,0,0, 0,0,2]
-    ])
+    ]
 
-def sudoku_solver(sudoku):
-    dlx = DLX(sudoku)
-    dlx.create_linked_mat()
-    dlx.search(0)
-        
+# LeetCode Input type:
+board = [["5","3",".",".","7",".",".",".","."],
+         ["6",".",".","1","9","5",".",".","."],
+         [".","9","8",".",".",".",".","6","."],
+         ["8",".",".",".","6",".",".",".","3"],
+         ["4",".",".","8",".","3",".",".","1"],
+         ["7",".",".",".","2",".",".",".","6"],
+         [".","6",".",".",".",".","2","8","."],
+         [".",".",".","4","1","9",".",".","5"],
+         [".",".",".",".","8",".",".","7","9"]]
 
-st = time.process_time()
-sudoku_solver(TEST_INPUT)
-et = time.process_time()
-print(f"search finished in {et-st} secs")
+sol = Solution()
+sol.solveSudoku(board)
