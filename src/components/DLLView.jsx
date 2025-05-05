@@ -198,9 +198,10 @@ function findArrowPos(posMat, r1, c1, r2, c2, dir) {
  * @param {*} c1 
  * @param {*} r2 
  * @param {*} c2 
+ * @param {String} color
  * @returns 
  */
-function Highlight( {posMat, r1, c1, r2, c2} ) {
+function Highlight( {posMat, r1, c1, r2, c2, color} ) {
     const [y1, x1] = posMat[r1][c1];
     const [y2, x2] = posMat[r2][c2];
 
@@ -212,20 +213,21 @@ function Highlight( {posMat, r1, c1, r2, c2} ) {
     return (
         <div
             key={`highlight-${r1}-${c1}-${r2}-${c2}`}
-            className="absolute bg-yellow-300 opacity-50"
+            className={`absolute bg-${color}-300 opacity-50`}
             style={{
                 top: `${top}px`,
                 left: `${left}px`,
                 width: `${width}px`,
                 height: `${height}px`,
-                zIndex: 1,
+                zIndex: 2,
             }}
         />
     );
 }
 
 
-function applyLogsToDLX(clonedDLX, logIndex, logs, setSolution) {
+function applyLogsToDLX(clonedDLX, posMat, logIndex, logs, setSolution, highlights) {
+    highlights = [];
     
     for (let i = 0; i <= logIndex; i++) {
         const currLog = logs[i];
@@ -245,19 +247,21 @@ function applyLogsToDLX(clonedDLX, logIndex, logs, setSolution) {
                 console.log("Solution: ", currLog.solution);
                 break;
             
-            // case 'select_col':
-            //     <Highlight
-            //         posMat={posMat}
-            //         r1={0}
-            //         c1={currLog.col}
-            //         r2={clonedDLX.numRows}
-            //         c2={currLog.col}
-            //     />//TODO:
-            //     break;
-            // case 'select_row':
-            //     break;
-            // case 'select_node':
-            //     break;
+            case 'select_col':
+                console.log("Highlighting: ", '(', r1, c1, ')', ', (', r2, c2, ')');
+                highlights.push(<Highlight
+                    posMat={posMat}
+                    r1={0}
+                    c1={currLog.col}
+                    r2={clonedDLX.numRows}
+                    c2={currLog.col}
+                    color="yellow"
+                />)
+                break;
+            case 'select_row':
+                break;
+            case 'select_node':
+                break;
             default:
                 console.warn(`Unknown log type: ${currLog.action}`);
                 break;
@@ -280,7 +284,8 @@ export default function LinkedListView( {dlx, matrix, logs, logIndex} ) {
      */
 
     if (!logs || logs.length === 0) return <div>No logs yet. Press the Generate Mat button, then the Play button.</div>;
-
+    const frameHeight = 5 * Math.round(window.innerHeight / 6) - OFFSET; // DLLView div height
+    const frameWidth = window.innerWidth / 2 - OFFSET; // DLLView div width
 
     /* Clone dlx to make changes on in this LinkedListView */
     const clonedDLX = useMemo(() => {
@@ -290,16 +295,15 @@ export default function LinkedListView( {dlx, matrix, logs, logIndex} ) {
     }, [matrix]);
 
     const [solution, setSolution] = useState([]);
+    let posMat = findNodePos(clonedDLX, frameWidth, frameHeight);
 
     useEffect(() => {
-        applyLogsToDLX(clonedDLX, logIndex, logs, setSolution);
-    }, [logIndex, logs, clonedDLX]);
+        applyLogsToDLX(clonedDLX, posMat, logIndex, logs, setSolution);
+    }, [posMat, logIndex, logs, clonedDLX]);
 
     
-    const frameHeight = 5 * Math.round(window.innerHeight / 6) - OFFSET; // DLLView div height
-    const frameWidth = window.innerWidth / 2 - OFFSET; // DLLView div width
-
-    let posMat = findNodePos(clonedDLX, frameWidth, frameHeight);
+    
+    
     // const arrows = [];
     
 

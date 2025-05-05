@@ -137,7 +137,6 @@ export class DancingLinks {
             },
             depth: currDepth,
             partialSolution: this.partialSolution,
-            //matrixState: this.getMatrixSnapshot()
         });
     }
 
@@ -175,7 +174,6 @@ export class DancingLinks {
             },
             depth: currDepth,
             partialSolution: this.partialSolution,
-            //matrixState: this.getMatrixSnapshot()
         });
     }
 
@@ -195,22 +193,22 @@ export class DancingLinks {
         const col = this.getColWithFewestNodes();
         
         /* Add selection to logs */
-        // this.logs.push({action: "select_col", col: col.id}); // TODO:
+        this.logs.push({action: "select_col", col: col.id}); // TODO:
         this.cover(col, k);
 
         let row = col.down;
         while (row !== col) {
             this.partialSolution.push(row.rowId);
-            // this.logs.push({action: "select_row", row: row.rowId}); // TODO:
+            this.logs.push({action: "select_row", row: row.rowId}); // TODO:
 
             let rightNode = row.right;
             while (rightNode !== row) {
                 /* Add selection to logs TODO:*/
-                // this.logs.push({
-                //     action: "select_node", 
-                //     row: rightNode.rowId,
-                //     col: rightNode.column.id
-                // }) 
+                this.logs.push({
+                    action: "select_node", 
+                    row: rightNode.rowId,
+                    col: rightNode.column.id
+                }) 
                 this.cover(rightNode, k);
                 rightNode = rightNode.right;
             }
@@ -221,11 +219,11 @@ export class DancingLinks {
             let leftNode = row.left;
             while (leftNode !== row) {
                 /* Add selection of node to logs TODO:*/
-                // this.logs.push({
-                //     action: "select_node", 
-                //     row: leftNode.rowId,
-                //     col: leftNode.column.id
-                // })
+                this.logs.push({
+                    action: "select_node", 
+                    row: leftNode.rowId,
+                    col: leftNode.column.id
+                })
                 this.uncover(leftNode, k);
                 leftNode = leftNode.left;
             }

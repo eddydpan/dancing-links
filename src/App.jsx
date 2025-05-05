@@ -18,7 +18,6 @@ function App() {
   const [dlx, setDLX] = useState(new DancingLinks(matrix));
 
   const [logIndex, setLogIndex] = useState(-1);
-  // const [stateDLL, setStateDLL] = useState(logs[0]);
 
   
   return (
@@ -33,7 +32,6 @@ function App() {
                     setDLX={setDLX}
                     logIndex={logIndex}
                     setLogIndex={setLogIndex}
-                    // setStateDLL={setStateDLL}    
             />
         </div>
         <div className="flex-1 bg-green-100 flex items-center justify-center">
