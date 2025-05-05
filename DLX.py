@@ -12,7 +12,6 @@ class Node():
         self.down = self
         self.right = self
         self.left = self
-        # Is the row_id strictly necessary? I'm thinking it might not be
         self.row_id = 0
 
 class Column(Node):
@@ -207,6 +206,12 @@ class DLX_solver():
 
                 # Set the corresponding spot on curr_board to "Q"
                 curr_board[r][c] = "Q"
+            
+            # Join the elements in each row to match leetcode reqs
+            for i in range(len(curr_board)):
+                curr_board[i] = "".join(curr_board[i])
+
+            # Save the solution board
             self.queens_boards.append(curr_board.copy())
 
     def exact_cover_to_dancing_list(self):
