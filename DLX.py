@@ -1,6 +1,7 @@
 """File containing classes and functions for construction a dancing linked list
 """
 import numpy as np
+import copy
 
 class Node():
     """Create a node for a circular, multi-linked list"""
@@ -35,6 +36,7 @@ class DLX_solver():
         if type == "N-Queens":
             self.cover_mat = cover_mat
             self.n = n
+            self.queens_boards = []
             
         elif type == "Sudoku":
             self.cover_mat = self.convert_to_exact_cover(sudoku)
@@ -192,6 +194,23 @@ class DLX_solver():
             self.solutions[c][r] = n + 1 # Convert from zero base
         
         print(self.solutions)
+
+    def convert_to_queens(self):
+        # create a blank n x n board to reference when building solutions
+        blank_board = [["." for _ in range(self.n)] for _ in range(self.n)]
+
+        # for each solution in self.solutions
+        for solution in self.solutions:
+            curr_board = copy.deepcopy(blank_board)
+            # for each row selected for the solution
+            for cover_row in solution:
+                # find the column and row indeces corresponding to the row
+                c = (cover_row-1) % self.n
+                r = (cover_row-1-c) // self.n
+
+                # Set the corresponding spot on curr_board to "Q"
+                curr_board[r][c] = "Q"
+            self.queens_boards.append(curr_board.copy())
 
     def exact_cover_to_dancing_list(self):
         """
