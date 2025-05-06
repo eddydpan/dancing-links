@@ -37,7 +37,7 @@ class DLX_solver():
         self.curr_sol = []
         self.queens_boards = []
 
-    def empty_to_exact_cover(self):
+    def queens_to_exact_cover(self):
         '''
         Generate the exact-cover matrix for an empty N-Queens problem of size n.
 
@@ -377,7 +377,7 @@ class Solution:
         solver = DLX_solver(n)
 
         # Leetcode looks for all solutions from empty nxn
-        solver.empty_to_exact_cover()
+        solver.queens_to_exact_cover()
         solver.exact_cover_to_dancing_list()
         # Run the solver
         solver.AlgoX()

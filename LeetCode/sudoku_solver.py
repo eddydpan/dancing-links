@@ -31,14 +31,14 @@ class DLX:
             sudoku = 9x9 matrix with 0s for empty cells and 1-9 for givens
         '''
         self.header = Column("Start")
-        self.exact_cover_matrix = self.convert_to_exact_cover(sudoku)
+        self.exact_cover_matrix = self.sudoku_to_exact_cover(sudoku)
         self.rows = len(self.exact_cover_matrix)
         self.cols = len(self.exact_cover_matrix[0])
         self.matrix = np.zeros((self.rows, self.cols), dtype = "object_") # object‐dtype NumPy array to later hold linked‐list nodes
         self.solutions = []
         self.solution = []
 
-    def convert_to_exact_cover(self, sudoku):
+    def sudoku_to_exact_cover(self, sudoku):
 
         col_size = 324
         row_size = 729
@@ -343,6 +343,8 @@ class Solution:
                     board[r][c] = str(dlx.solution[r][c])
             # print(f"List of Strings: {board}")
 
+
+# STOP COPY HERE, LEETCODE SOLUTION STOPS HERE STOP
 TEST_INPUT = [
                     [0,2,0, 0,0,6, 9,0,0],
                     [0,0,0, 0,5,0, 0,2,0],

@@ -40,12 +40,12 @@ class DLX_solver():
             self.queens_boards = []
             
         elif type == "Sudoku":
-            self.cover_mat = self.convert_to_exact_cover(sudoku)
+            self.cover_mat = self.sudoku_to_exact_cover(sudoku)
             self.rows = len(self.cover_mat)
             self.cols = len(self.cover_mat[0])
             self.matrix = np.zeros((self.rows, self.cols), dtype = "object_") # object‐dtype NumPy array to later hold linked‐list nodes
 
-    def empty_to_exact_cover(self):
+    def queens_to_exact_cover(self):
         '''
         Generate the exact-cover matrix for an empty N-Queens problem of size n.
 
@@ -82,7 +82,7 @@ class DLX_solver():
                 self.cover_mat[r*n+c+1][pos_diag_map] = 1 
                 self.cover_mat[r*n+c+1][neg_diag_map] = 1 
 
-    def convert_to_exact_cover(self, sudoku):
+    def sudoku_to_exact_cover(self, sudoku):
         '''
         Convert a 9x9 Sudoku board into an exact-cover binary matrix.
 
