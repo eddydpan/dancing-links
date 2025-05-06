@@ -33,18 +33,19 @@ class DLX_solver():
         self.curr_sol = []
         self.queens_boards = []
 
-    def queens_to_exact_cover(self):
-        """Converts a binary occupancy matrix of an square N-Queens problem into
-        an exact cover matrix"""
-        # Pseudocode:
-        # 1. Iterate through the binary occupancy matrix
-        #   2. If value is 1, already occupied
-        # 
-        # OH YOU CAN JUST APPEND ANY PRE-DETERMINED ROWS INTO THE SOLUTIONS
-        # BEFORE STARTING THE SEARCH
-        pass
-
     def empty_to_exact_cover(self):
+        '''
+        Generate the exact-cover matrix for an empty N-Queens problem of size n.
+
+        Constructs a matrix with (n**2 + 1) rows and (6*n - 2) columns encoding:
+        - n “row” constraints
+        - n “column” constraints
+        - (2n - 1) positive-diagonal constraints
+        - (2n - 1) negative-diagonal constraints
+
+        Each candidate queen placement at (r,c) becomes one row in this matrix,
+        with four 1's marking which 4 constraints it satisfies.
+        '''
         # cover matrix representing an empty N-Queens exact cover matrix
         # Psuedo code:
 
@@ -71,6 +72,20 @@ class DLX_solver():
                 self.cover_mat[r*n+c+1][neg_diag_map] = 1 
 
     def convert_to_queens(self):
+        '''
+        Builds grid representations of all found n-queens solutions from AlgoX()
+
+        Args: 
+            solutions (list[list[int]]): A list of all row combinations from the
+                                        n-queens exact cover matrix that create
+                                        valid solutions. Rows used in solutions
+                                        are listed as ints
+
+        Side-effect:
+            self.queens_boards is populated with lists that represent the
+            solutions in string grid form, as expected for Leetcode 51.
+            An example of such form is: ["..Q.", "Q...", "...Q", ".Q.."]
+        '''
         # create a blank n x n board to reference when building solutions
         blank_board = [["." for _ in range(self.n)] for _ in range(self.n)]
 
@@ -95,7 +110,19 @@ class DLX_solver():
 
 
     def exact_cover_to_dancing_list(self):
-        """Converts an exact cover matrix into a dancing linked list"""
+        """
+        Build the toroidal dancing-links structure from the exact-cover matrix.
+
+        Reads self.cover_mat (with header padding at row 0) and:
+        1. Creates Column header nodes for each constraint.
+        2. Links them left↔right off self.header.
+        3. For each 1 in self.cover_mat, creates a Node, splices it vertically
+            into its column and horizontally into its row.
+
+        Side-effects:
+            - Populates self.cover_mat[0][*] with Column objects.
+            - Splices every Node into the 4-way linked structure.
+        """
         # Pseudocode:
         # 1. Create a column node + 1 for each column in the exact cover matrix (gives us the dummy home node too)
         # 2. Add that reference to that column at the self.cover_mat[0][i]
@@ -160,6 +187,14 @@ class DLX_solver():
 
 
     def least_constrained_col(self):
+        '''
+        Choose the column header with the fewest remaining nodes (smallest size).
+
+        Implements Knuth's “minimum remaining values” heuristic to reduce branching.
+
+        Returns:
+            Column: The most constrained column header (fewest 1's) to branch on next.
+        '''
         head = self.header
         least_nodes = head.right
         head = head.right
@@ -174,7 +209,17 @@ class DLX_solver():
         return least_nodes
 
     def cover(self, col_head):
-        """Covers a column in the dancing linked list"""
+        """
+        Remove a column (and its rows) from the dancing-links structure.
+
+        Implements Knuth’s cover operation:
+        1. Unlink col_head from its left↔right neighbors.
+        2. For each row in that column, unlink every node in that row from its
+            up↔down neighbors, decrementing column sizes.
+
+        Args:
+            col_head (Column): The column header to cover.
+        """
         # Pseudocode:
         # 1. Extract the column from the node
         # 2. Disconnect the head of the column from the other heads
@@ -205,7 +250,16 @@ class DLX_solver():
             row = row.down
 
     def uncover(self, col_head):
-        """Uncovers a column in the dancing linked list"""
+        """
+        Restore a previously covered column and its rows back into the structure.
+
+        The inverse of cover:
+        1. For each row in reverse order, relink its nodes vertically.
+        2. Reinsert col_head into its left↔right neighbors.
+
+        Args:
+            col_head (Column): The column header to uncover.
+        """
         # Pseudocode:
         # Basically just the reverse of what we did in cover
 
@@ -232,7 +286,11 @@ class DLX_solver():
         col_head.right.left = col_head
 
     def AlgoX(self):
-        """Searches for solutions to the N-Queens problem using Algorithm X"""
+        """Searches for solutions to the N-Queens problem using Algorithm X
+
+        Side-effects:
+            - Populates self.solutions (list of row_ids or nodes) on success.
+        """
         # Pseudocode:
         # 1. Base case, header.right = header, append current solution to solutions, return
         # 2. Choose a starting column, probably off of least constraints heuristic
@@ -302,6 +360,16 @@ class DLX_solver():
 
 class Solution:
     def solveNQueens(self, n: int):
+        """Finds all solutions to the N-Queens problem given n
+
+        Args:
+            n (int): The number of queens to place in an nxn board
+
+        Returns:
+            list[list[str]]: A list of lists that represent the solutions in 
+            string grid form, as expected for Leetcode 51. An example of such 
+            form is: ["..Q.", "Q...", "...Q", ".Q.."]
+        """
         solver = DLX_solver(n)
 
         # Leetcode looks for all solutions from empty nxn
