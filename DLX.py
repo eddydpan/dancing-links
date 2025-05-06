@@ -32,6 +32,9 @@ class DLX_solver():
         self.solutions = []
         self.curr_sol = []
         if type == "N-Queens":
+            # Edge case, make sure that n is not negative
+            if n < 0:
+                raise ValueError("n must be greater than or equal to 0")
             self.cover_mat = cover_mat
             self.n = n
             self.queens_boards = []
