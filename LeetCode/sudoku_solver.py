@@ -227,7 +227,7 @@ class DLX:
             n = (row_id % 81) % 9
             self.solution[c][r] = n + 1
             board[c][r] = n + 1
-        print(self.solution)
+        # print(self.solution)
 
 
     # The search function as described in Knuth's paper
@@ -235,7 +235,9 @@ class DLX:
         
         # We managed to cover all columns, and therefore found solution(s)
         if (self.header.right == self.header):
-            return self.convert_to_sudoku(self.solutions, board)
+            # return self.convert_to_sudoku(self.solutions, board)
+            self.convert_to_sudoku(self.solutions, board)
+            return True
         
         column = self.get_col_with_least_nodes()
 
@@ -251,7 +253,9 @@ class DLX:
                 self.cover(row_right)
                 row_right = row_right.right
             
-            self.search(k+1, board)
+            # self.search(k+1, board)
+            if self.search(k+1, board):
+                return True
 
 
             self.solutions.pop()
@@ -264,10 +268,67 @@ class DLX:
             
             row = row.down
         
+        # self.uncover(column)
         self.uncover(column)
+        return False
 
 class Solution:
+    def _validate_input(self, board):
+        """
+        Ensure board is 9×9, entries are '.' or '1'–'9', and no duplicates in row/col/box.
+        Raises ValueError on any violation.
+        """
+        # Dimension check
+        if len(board) != 9 or any(len(row) != 9 for row in board):
+            raise ValueError("Board must be 9×9")
+
+        # Track seen digits
+        rows = [set() for _ in range(9)]
+        cols = [set() for _ in range(9)]
+        boxes = [set() for _ in range(9)]
+
+        for r in range(9):
+            for c in range(9):
+                val = board[r][c]
+                if val == '.':
+                    continue
+
+                # Type & range check
+                if not (isinstance(val, str) and len(val) == 1 and '1' <= val <= '9'):
+                    raise ValueError(f"Invalid entry {val!r} at ({r},{c})")
+
+                # Row duplicate?
+                if val in rows[r]:
+                    raise ValueError(f"Duplicate {val!r} in row {r}")
+                rows[r].add(val)
+
+                # Column duplicate?
+                if val in cols[c]:
+                    raise ValueError(f"Duplicate {val!r} in column {c}")
+                cols[c].add(val)
+
+                # Box duplicate?
+                bi = (r // 3) * 3 + (c // 3)
+                if val in boxes[bi]:
+                    raise ValueError(f"Duplicate {val!r} in box {bi}")
+                boxes[bi].add(val)
+
     def solveSudoku(self, board):
+        """
+        Solve the Sudoku board in-place using DLX algorithm.
+        Args:
+            board: 9x9 list of lists with '.' for empty cells and '1'-'9' for givens
+            OR
+            board: 9x9 list of lists with 0 for empty cells and 1-9 for givens
+        Raises:
+            ValueError: If the board is not a valid Sudoku or if it cannot be solved.
+        Returns:
+            None: The board is modified in-place to be a valid Sudoku solution.
+        """
+        # Uncomment line 344 to print the str board or line 230 in convert_to_sudoku to print the int board
+        
+        self._validate_input(board)
+    
         if isinstance(board[0][0], str):
             grid = [[int(board[r][c]) if board[r][c] != '.' else 0
                    for c in range(9)] for r in range(9)]
@@ -281,7 +342,7 @@ class Solution:
             for r in range(9):
                 for c in range(9):
                     board[r][c] = str(dlx.solution[r][c])
-            print(f"List of Strings: {board}")
+            # print(f"List of Strings: {board}")
 
 TEST_INPUT = [
                     [0,2,0, 0,0,6, 9,0,0],
