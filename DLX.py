@@ -192,6 +192,20 @@ class DLX_solver():
         print(self.solutions)
 
     def convert_to_queens(self):
+        '''
+        Builds grid representations of all found n-queens solutions from AlgoX()
+
+        Args: 
+            solutions (list[list[int]]): A list of all row combinations from the
+                                        n-queens exact cover matrix that create
+                                        valid solutions. Rows used in solutions
+                                        are listed as ints
+
+        Side-effect:
+            self.queens_boards is populated with lists that represent the
+            solutions in string grid form, as expected for Leetcode 51.
+            An example of such form is: ["..Q.", "Q...", "...Q", ".Q.."]
+        '''
         # create a blank n x n board to reference when building solutions
         blank_board = [["." for _ in range(self.n)] for _ in range(self.n)]
 
