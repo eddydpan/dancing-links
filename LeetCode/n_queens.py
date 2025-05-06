@@ -24,10 +24,14 @@ class Column(Node):
 
 class DLX_solver():
     """Class for using DLX to solve N-Queens"""
-    def __init__(self, n, cover_mat = []):
+    def __init__(self, n):
         """Initialize the DLX solver"""
+        # Edge case, make sure that n is not negative
+        if n < 0:
+            raise ValueError("n must be greater than or equal to 0")
+
         self.header = Column("Header")
-        self.cover_mat = cover_mat
+        self.cover_mat = []
         self.n = n
         self.solutions = []
         self.curr_sol = []
