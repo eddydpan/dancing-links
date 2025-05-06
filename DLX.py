@@ -24,7 +24,7 @@ class Column(Node):
         self.col_id = col_id
 
 class DLX_solver():
-    """Class for using DLX to solve N-Queens"""
+    """Class for using DLX to solve N-Queens and Sudoku"""
     def __init__(self, type, n, cover_mat, sudoku):
         """Initialize the DLX solver"""
         self.header = Column("Header")
